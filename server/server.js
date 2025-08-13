@@ -1,9 +1,11 @@
+require('dotenv').config();
+
 const app = require('./app');
-const dotenv = require('dotenv');
+
+
 const connectDB = require('./config/db')
 
-// Load env vars
-dotenv.config();
+
 
 //Connect to MongoDB
 connectDB();
