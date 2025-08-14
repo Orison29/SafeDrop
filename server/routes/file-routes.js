@@ -3,9 +3,9 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const file = require('../models/file-model')
+const File = require('../models/file-model')
 const authMiddleware = require('../middleware/auth-middleware');
-const {getUserFiles} = require('../controllers/file-controller');
+const {getUserFiles,uploadFile,downloadFile} = require('../controllers/file-controller');
 
 
 const router = express.Router();
@@ -28,32 +28,12 @@ const upload = multer({ storage });
 // @access Private
 // Upload file
 
-router.post('/upload', authMiddleware, upload.single('file'), async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
-        }
-
-        const newFile = new file({
-            filename: req.file.filename,
-            originalname: req.file.originalname,
-            mimetype: req.file.mimetype,
-            size: req.file.size,
-            uploadedBy: req.user.userId
-        });
-
-        await newFile.save();
-
-        res.status(201).json({
-            message: 'File uploaded successfully',
-            file: newFile
-        });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-});
+router.post('/upload', authMiddleware, upload.single('file'), uploadFile);
 
 //Get /api/files - Get files uploaded by loggedin user
 router.get('/',authMiddleware, getUserFiles);
+
+//Get - Download files uploaded by the user
+router.get('/download/:id',authMiddleware,downloadFile)
 
 module.exports = router;
