@@ -5,6 +5,8 @@ const path = require('path');
 const fs = require('fs');
 const file = require('../models/file-model')
 const authMiddleware = require('../middleware/auth-middleware');
+const {getUserFiles} = require('../controllers/file-controller');
+
 
 const router = express.Router();
 
@@ -50,5 +52,8 @@ router.post('/upload', authMiddleware, upload.single('file'), async (req, res) =
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
+
+//Get /api/files - Get files uploaded by loggedin user
+router.get('/',authMiddleware, getUserFiles);
 
 module.exports = router;
