@@ -5,7 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const File = require('../models/file-model')
 const authMiddleware = require('../middleware/auth-middleware');
-const {getUserFiles,uploadFile,downloadFile} = require('../controllers/file-controller');
+const {getUserFiles,uploadFile,downloadFile,deleteFile} = require('../controllers/file-controller');
 
 
 const router = express.Router();
@@ -23,17 +23,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// @desc Upload a file
-// @route POST /api/files/upload
-// @access Private
-// Upload file
-
+//Routes
 router.post('/upload', authMiddleware, upload.single('file'), uploadFile);
-
-//Get /api/files - Get files uploaded by loggedin user
 router.get('/',authMiddleware, getUserFiles);
-
-//Get - Download files uploaded by the user
-router.get('/download/:id',authMiddleware,downloadFile)
+router.get('/download/:id',authMiddleware,downloadFile);
+router.delete('/delete/:id',authMiddleware,deleteFile);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 const path = require('path');
 const File = require('../models/file-model');
-
+const fs = require('fs');
 const getUserFiles = async (req,res) => {
     try{
         const filesFound = await File.find({uploadedBy:req.user.userId}).sort({uploadedAt:-1});
@@ -60,4 +60,28 @@ const downloadFile = async (req,res) => {
     }
 }
 
-module.exports = {getUserFiles,uploadFile,downloadFile};
+const deleteFile = async (req,res) => {
+    try {
+        const fileDoc = await File.findById(req.params.id);
+        if(!fileDoc){
+            return res.status(404).json({message:'File not Found'})
+        }
+        if(fileDoc.uploadedBy.toString() !== req.user.userId){
+            return res.status(403).json({message:'Access denied'});
+        }
+        const filePath = path.join(__dirname,'../uploads',fileDoc.filename);
+
+        if(fs.existsSync(filePath)){
+            fs.unlinkSync(filePath);
+        }
+        await fileDoc.deleteOne();
+
+        res.json({message:'File deleted successfully'})
+    } catch (error) {
+    console.error('Error deleting file:', error);
+    res.status(500).json({ message: 'Server error while deleting the file', error: error.message });
+    }
+
+}
+
+module.exports = {getUserFiles,uploadFile,downloadFile,deleteFile};
