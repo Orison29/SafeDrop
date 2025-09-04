@@ -6,15 +6,17 @@ import FileList from './components/FileList';
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-black text-white flex">
-      {/* Sidebar */}
-      <Sidebar />
+    <div className="min-h-screen bg-black text-white ">
       
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Top Navigation */}
+      {/* Top Navigation */}
         <Topbar />
+
+      {/* Sidebar and Main Content Area */}
+      <div className="flex">
         
+        {/* Sidebar */}
+        <Sidebar />
+
         {/* Dashboard Content */}
         <main className="flex-1 p-6 bg-gray-900">
           {/* Upload Controls */}

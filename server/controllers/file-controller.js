@@ -1,87 +1,90 @@
-const path = require('path');
-const File = require('../models/file-model');
-const fs = require('fs');
-const getUserFiles = async (req,res) => {
-    try{
-        const filesFound = await File.find({uploadedBy:req.user.userId}).sort({uploadedAt:-1});
-        res.json({filesFound});
-    }catch(err){
-         console.error("Error fetching files:",err);
-         res.status(500).json({
-            message: "Server error while fetching files"
-         });
-    }
-}
+// controllers/fileController.js
+const { File } = require("../models/File");
+
 const uploadFile = async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
-        }
+  try {
+    const { name, size, type, folderUuid } = req.body;
 
-        const newFile = new File({
-            filename: req.file.filename,
-            originalname: req.file.originalname,
-            mimetype: req.file.mimetype,
-            size: req.file.size,
-            uploadedBy: req.user.userId
-        });
+    const file = new File({
+      name,
+      size,
+      type,
+      folder: folderUuid || null, // root if not in a folder
+      fileUrl: req.fileUrl,       // set by S3 upload middleware
+      uploadedBy: req.user.uuid,
+    });
 
-        await newFile.save();
+    await file.save();
+    res.status(201).json(file);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to upload file", details: err.message });
+  }
+};
 
-        res.status(201).json({
-            message: 'File uploaded successfully',
-            file: newFile
-        });
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
-} 
+const getFiles = async (req, res) => {
+  try {
+    const files = await File.find({ uploadedBy: req.user.uuid });
+    res.json(files);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch files", details: err.message });
+  }
+};
 
-const downloadFile = async (req,res) => {
-    try {
+const getFilesInFolder = async (req, res) => {
+  try {
+    const { folderUuid } = req.params;
 
-        const fileDoc = await File.findById(req.params.id);
+    const files = await File.find({
+      folder: folderUuid,
+      uploadedBy: req.user.uuid,
+    });
 
-        if(!fileDoc){
-            return res.status(404).json({message:'File not found'});
-        }
+    res.json(files);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch folder files", details: err.message });
+  }
+};
 
-        //check if the logged in user is the owner
-        if(fileDoc.uploadedBy.toString() !== req.user.userId){
-            return res.status(403).json({message:'Access denied'});
-        }
+const moveFile = async (req, res) => {
+  try {
+    const { fileUuid } = req.params;
+    const { folderUuid } = req.body;
 
-        const filePath = path.join(__dirname,'../uploads',fileDoc.filename);
-        res.download(filePath,fileDoc.originalname);
+    const file = await File.findOneAndUpdate(
+      { uuid: fileUuid, uploadedBy: req.user.uuid },
+      { folder: folderUuid || null },
+      { new: true }
+    );
 
-    } catch (error) {
-        console.error('Error downloading file:',error);
-        res.status(500).json({message:'Server error while downloading file'});
-    }
-}
+    if (!file) return res.status(404).json({ error: "File not found" });
 
-const deleteFile = async (req,res) => {
-    try {
-        const fileDoc = await File.findById(req.params.id);
-        if(!fileDoc){
-            return res.status(404).json({message:'File not Found'})
-        }
-        if(fileDoc.uploadedBy.toString() !== req.user.userId){
-            return res.status(403).json({message:'Access denied'});
-        }
-        const filePath = path.join(__dirname,'../uploads',fileDoc.filename);
+    res.json(file);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to move file", details: err.message });
+  }
+};
 
-        if(fs.existsSync(filePath)){
-            fs.unlinkSync(filePath);
-        }
-        await fileDoc.deleteOne();
+const deleteFile = async (req, res) => {
+  try {
+    const { uuid } = req.params;
 
-        res.json({message:'File deleted successfully'})
-    } catch (error) {
-    console.error('Error deleting file:', error);
-    res.status(500).json({ message: 'Server error while deleting the file', error: error.message });
-    }
+    const file = await File.findOneAndDelete({
+      uuid,
+      uploadedBy: req.user.uuid,
+    });
 
-}
+    if (!file) return res.status(404).json({ error: "File not found" });
 
-module.exports = {getUserFiles,uploadFile,downloadFile,deleteFile};
+    res.json({ message: "File deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete file", details: err.message });
+  }
+};
+
+module.exports = {
+  uploadFile,
+  getFiles,
+  getFilesInFolder,
+  moveFile,
+  deleteFile,
+};
