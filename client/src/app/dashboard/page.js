@@ -1,10 +1,36 @@
+"use client";
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import UploadControls from './components/UploadControls';
 import FolderList from './components/FolderList';
 import FileList from './components/FileList';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        router.push("/signin");
+      } else {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, [router]);
+
+  if (loading) return(
+    <div className='flex items-center justify-center min-h-screen'>
+      <p className='text-white'>Loading...</p> 
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-black text-white ">
       

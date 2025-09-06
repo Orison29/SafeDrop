@@ -1,5 +1,5 @@
-// controllers/fileController.js
-const { File } = require("../models/File");
+// controllers/file-controller.js
+const { File } = require("../models/file-model");
 
 const uploadFile = async (req, res) => {
   try {

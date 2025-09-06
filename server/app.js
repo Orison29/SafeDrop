@@ -3,7 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
-const protectedRoutes = require('./routes/protected-routes')
+
 const fileRoutes = require('./routes/file-routes');
 const authRoutes = require('./routes/auth-routes');
 
@@ -23,7 +23,6 @@ app.use('/api/auth', authRoutes);
 // Serve uploaded files statically
 app.use('/uploads',express.static(path.join(__dirname,'uploads')));
 
-app.use('/api/protected',protectedRoutes);
 
 // Routes
 app.use('/api/files',fileRoutes);

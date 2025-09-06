@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function SignIn() {
   const [form, setForm] = useState({ email: "", password: "" });
   const Router = useRouter();
+  const [value, setValue] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -14,7 +15,7 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle sign-in logic here
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
@@ -27,6 +28,7 @@ export default function SignIn() {
       Router.push("/dashboard");
     } else {
       // Sign-in failed
+      setValue(data.message || "Sign-in failed");
       console.error("Sign-in failed:", data);
     }
   };
@@ -63,6 +65,7 @@ export default function SignIn() {
               Sign In
             </button>
           </form>
+          <p className="mt-4 text-center text-red-600">{value}</p>
           <p className="mt-4 text-center text-gray-400">
             Don't have an account?{" "}
             <Link href="/" className="text-blue-500">

@@ -34,8 +34,8 @@
 // routes/fileRoutes.js
 const express = require("express");
 const router = express.Router();
-const fileController = require("../controllers/fileController");
-const authMiddleware = require("../middleware/auth");
+const fileController = require("../controllers/file-controller");
+const authMiddleware = require("../middleware/auth-middleware");
 
 router.post("/", authMiddleware, fileController.uploadFile);
 router.get("/", authMiddleware, fileController.getFiles);
