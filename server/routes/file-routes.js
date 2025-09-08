@@ -34,13 +34,14 @@
 // routes/fileRoutes.js
 const express = require("express");
 const router = express.Router();
-const fileController = require("../controllers/file-controller");
 const authMiddleware = require("../middleware/auth-middleware");
+const { getUploadUrl,confirmUpload, listFiles, deleteFile, getDownloadUrl } = require("../controllers/file-controller");
 
-router.post("/", authMiddleware, fileController.uploadFile);
-router.get("/", authMiddleware, fileController.getFiles);
-router.get("/folder/:folderUuid", authMiddleware, fileController.getFilesInFolder);
-router.put("/:fileUuid/move", authMiddleware, fileController.moveFile);
-router.delete("/:uuid", authMiddleware, fileController.deleteFile);
+router.post("/upload-url", authMiddleware, getUploadUrl);
+router.post("/confirm-upload", authMiddleware, confirmUpload);
+router.get("/", authMiddleware, listFiles);
+router.delete("/:uuid", authMiddleware, deleteFile);
+router.get("/download/:uuid", authMiddleware, getDownloadUrl);
 
 module.exports = router;
+
