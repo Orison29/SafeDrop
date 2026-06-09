@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 
 const fileRoutes = require('./routes/file-routes');
 const authRoutes = require('./routes/auth-routes');
+const folderRoutes = require('./routes/folder-routes');
 
 const app = express();
 
@@ -26,5 +27,6 @@ app.use('/uploads',express.static(path.join(__dirname,'uploads')));
 
 // Routes
 app.use('/api/files',fileRoutes);
+app.use('/api/folders',folderRoutes);
 
 module.exports = app;

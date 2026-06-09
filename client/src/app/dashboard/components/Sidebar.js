@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation';
 export default function Sidebar() {
   const router = useRouter();
   const navItems = [
-    { name: 'Folder', active: true },
+    { name: 'Folder', active: false },
     { name: 'Files', active: false },
     { name: 'Starred', active: false },
     { name: 'Trash', active: false },

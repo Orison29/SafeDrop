@@ -1,3 +1,4 @@
+
 export default function Topbar() {
   return (
     <header className="bg-black border-b border-gray-800 px-6 py-4">
@@ -25,10 +26,10 @@ export default function Topbar() {
           </div>
         </div>
         
-        {/* Profile/Options */}
-        <div className="flex items-center space-x-4">
+        {/* Profile */}
+        <div className="flex items-center space-x-4 px-3 py-2 rounded-md hover:bg-gray-800">
           <button className="text-gray-400 hover:text-white transition-colors">
-            Profile/options
+            Profile
           </button>
           <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
             <span className="text-white text-sm font-medium">U</span>

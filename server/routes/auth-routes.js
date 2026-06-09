@@ -26,7 +26,7 @@ router.post('/logout', authMiddleware, (req, res) => {
 // Check current logged in user
 router.get('/me', authMiddleware, async (req, res) => {
     try {
-        const user = await User.findOne({ uuid: req.user.uuid }).select("-password");
+        const user = await User.findOne({ uuid: req.user.userID}).select("-password");
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }

@@ -7,6 +7,7 @@ import FileList from './components/FileList';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+
 export default function DashboardPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -18,6 +19,7 @@ export default function DashboardPage() {
       });
       if (!res.ok) {
         router.push("/signin");
+        console.log("User not authenticated, redirecting to /signin");
       } else {
         setLoading(false);
       }

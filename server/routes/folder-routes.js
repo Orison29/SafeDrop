@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const folderController = require("../controllers/folderController");
-const authMiddleware = require("../middleware/auth");
+const {createFolder, getFolders, deleteFolder} = require("../controllers/folder-controller");
+const authMiddleware = require("../middleware/auth-middleware");
 
-router.post("/", authMiddleware, folderController.createFolder);
-router.get("/", authMiddleware, folderController.getFolders);
-router.delete("/:uuid", authMiddleware, folderController.deleteFolder);
+router.post("/", authMiddleware, createFolder);
+router.get("/", authMiddleware, getFolders);
+router.delete("/:uuid", authMiddleware, deleteFolder);
 
 module.exports = router;
 
